@@ -6,6 +6,7 @@ __pycache__/
 
 # virtualEnv directory, pyenv #
 flappy/
+phlappy/
 .python-version
 
 # C extensions
