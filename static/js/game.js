@@ -24,7 +24,7 @@ var Boot = function(game){};
 Boot.prototype = {
     
     preload: function(){
-        this.load.image('loadbar', 'assets/loadbar.png');
+        this.load.image('loadbar', '../static/assets/loadbar.png');
     },
     
     create: function(){
@@ -51,7 +51,7 @@ LoadScreen.prototype = {
         /* load assets and create some name keys for Phaser engine */
         
         /* SPRITES */
-        this.load.image('player', 'assets/player.png');
+        this.load.image('player', '../static/assets/player.png');
     },
     create: function() {
         /* now that assets are loaded, transition to the Title Screen */
@@ -69,8 +69,8 @@ TitleScreen.prototype = {
         
         this.stage.setBackgroundColor("#0000FF");
         /* create the title, play, and instruction text*/
-        this.titleText = game.add.text(GAME_WIDTH/2, GAME_HEIGHT/2, 'PHLAPPY BIRD', {
-            font: '60px Helvetica',
+        this.titleText = game.add.text(GAME_WIDTH/2, GAME_HEIGHT/3, 'PHLAPPY\n    BIRD', {
+            font: '40px Helvetica',
             fill: '#ffffff',
             fontWeight: '700'
         });
@@ -113,12 +113,41 @@ var Game = function(game){};
 
 Game.prototype = {
 
-    create: function() {},
-    update: function() {},
-    handleInput: function() {},
-    gameWon: function() {},
-    gameOver: function() {}
+    create: function() {
+        /* create the player, and input object */
+        this.createPlayer();
+        this.flyInput = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
+    },
+
+    update: function() {
+
+        this.handleInput();
+    
+    },
+    
+    handleInput: function() {
+
+        if(this.flyInput.isDown){
+            player.body.velocity.y = -300;
+            console.log('attempting to fly')
+        }
+
+    },
+    
+    gameWon: function() {},
+    
+    gameOver: function() {},
+
+    createPlayer() {
+
+        player = game.add.sprite( GAME_WIDTH/2, GAME_HEIGHT/2, 'player', 30);
+        player.anchor.setTo(0.5);
+        game.physics.arcade.enable(player);
+        player.body.collideWorldBounds = true;
+        player.body.gravity.y = 600;
+
+    }
 };
 
 
