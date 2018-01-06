@@ -52,6 +52,11 @@ LoadScreen.prototype = {
         
         /* SPRITES */
         this.load.image('player', '../static/assets/player.png');
+        
+        this.load.image('obstacle_1', '../static/assets/obstacle_1.png');
+        this.load.image('obstacle_2', '../static/assets/obstacle_2.png');
+        this.load.image('obstacle_3', '../static/assets/obstacle_3.png');
+
     },
     create: function() {
         /* now that assets are loaded, transition to the Title Screen */
