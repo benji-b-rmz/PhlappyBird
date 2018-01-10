@@ -5,11 +5,14 @@
 var game;
 var GAME_WIDTH = 270;
 var GAME_HEIGHT = 480;
+var DISTANCE_BETWEEN_OBSTACLES = 200;
 
 var background;
 var middleground;
 
 var player;
+var obstacles;
+var obstacleTypes;
 
 var majorTextStyle = {
     font: '40px Helvetica',
@@ -65,9 +68,9 @@ LoadScreen.prototype = {
         /* SPRITES */
         this.load.image('player', '../static/assets/player.png');
         
-        this.load.image('obstacle_1', '../static/assets/obstacle_1.png');
-        this.load.image('obstacle_2', '../static/assets/obstacle_2.png');
-        this.load.image('obstacle_3', '../static/assets/obstacle_3.png');
+        this.load.image('smallObstacle', '../static/assets/obstacle_1.png');
+        this.load.image('mediumObstacle', '../static/assets/obstacle_2.png');
+        this.load.image('largeObstacle', '../static/assets/obstacle_3.png');
 
     },
     create: function() {
@@ -124,6 +127,7 @@ Game.prototype = {
         game.stage.backgroundColor = "#0000ff";
 
         this.createPlayer();
+        this.initObstacles();
         this.flyInput = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
     },
@@ -171,7 +175,38 @@ Game.prototype = {
             }
         }
 
-    }
+    },
+
+    getFurthestObstacleX: function(obstacleArray) {
+        var maxX = Number.MIN_SAFE_INTEGER;
+        for (var i = 0; i < obstacleArray.length; i++) {
+            if (maxX < obstacleArray[i].body.x){
+                maxX = obstacleArray[i].body.x;
+            }
+        }
+        return maxX;
+    },
+
+    initObstacles: function() {
+        
+        obstacleTypes = ['smallObstacle', 'mediumObstacle', 'largeObstacle'];
+        obstacles = game.add.group();
+        var currentObstacle;
+        for(var i = 0; i < 4; i++) {
+            currentObstacle = obstacles.create(i * DISTANCE_BETWEEN_OBSTACLES, 0, obstacleTypes[Math.floor(Math.random() * obstacleTypes.length)] );
+            game.physics.arcade.enable(currentObstacle);
+            currentObstacle.body.velocity.x = -40;
+
+            currentObstacle.update = function() {
+                /* check if the sprite went out of bounds, if so, move it to the end of the line, change its size */
+                if (this.body.x < -10) {
+                    this.body.x = obstacles.length * DISTANCE_BETWEEN_OBSTACLES;
+                }
+            }
+        }
+
+    },
+
 };
 
 var GameOver = function(game){};
