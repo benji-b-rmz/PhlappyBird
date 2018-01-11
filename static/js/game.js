@@ -6,6 +6,9 @@ var game;
 var GAME_WIDTH = 270;
 var GAME_HEIGHT = 480;
 var DISTANCE_BETWEEN_OBSTACLES = 200;
+var OBSTACLE_TYPES = ['smallObstacle', 'mediumObstacle', 'largeObstacle'];
+var OBSTACLE_SPEED = -150;
+
 
 var background;
 var middleground;
@@ -21,9 +24,15 @@ var majorTextStyle = {
 };
 
 var minorTextStyle = {
-    font: '30px Helvetica',
+    font: '20px Helvetica',
     fill: '#ffffff',
     fontWeight: '700'    
+};
+
+var instructionTextStyle = {
+    font: '15px Helvetica',
+    fill: '#ffffff',
+    fontWeight: '700'
 };
 
 
@@ -100,8 +109,8 @@ TitleScreen.prototype = {
 
         /* Instructions */
         this.instructionText = game.add.text(GAME_WIDTH/2, GAME_HEIGHT/2 + 70,
-            'Use SPACE or RIGHT-CLICK to fly',
-            minorTextStyle
+            'press SPACEBAR to fly',
+            instructionTextStyle
         );
         this.instructionText.anchor.set(0.5);
 
@@ -151,7 +160,7 @@ Game.prototype = {
     gameWon: function() {},
     
     gameOver: function() {
-        console.log('gameover');
+        console.log('GAME OVER');
         game.state.start('GameOver');
 
     },
@@ -187,22 +196,30 @@ Game.prototype = {
         return maxX;
     },
 
+    createObstacle(obstacleGroup, index, isBottom){
+        var currentObstacle = obstacleGroup.create(index * DISTANCE_BETWEEN_OBSTACLES, 0, OBSTACLE_TYPES[Math.floor(Math.random() * OBSTACLE_TYPES.length)] );
+        game.physics.arcade.enable(currentObstacle);
+        currentObstacle.body.velocity.x = OBSTACLE_SPEED;
+        if (isBottom){
+            currentObstacle.y = GAME_HEIGHT - currentObstacle.height;
+        }
+
+        currentObstacle.update = function() {
+            /* check if the sprite went out of bounds, if so, move it to the end of the line, change its size */
+            if (this.body.x < -10) {
+                this.body.x = obstacleGroup.length/2 * DISTANCE_BETWEEN_OBSTACLES;
+            }
+        }
+
+    },
+
     initObstacles: function() {
         
-        obstacleTypes = ['smallObstacle', 'mediumObstacle', 'largeObstacle'];
         obstacles = game.add.group();
         var currentObstacle;
-        for(var i = 0; i < 4; i++) {
-            currentObstacle = obstacles.create(i * DISTANCE_BETWEEN_OBSTACLES, 0, obstacleTypes[Math.floor(Math.random() * obstacleTypes.length)] );
-            game.physics.arcade.enable(currentObstacle);
-            currentObstacle.body.velocity.x = -40;
-
-            currentObstacle.update = function() {
-                /* check if the sprite went out of bounds, if so, move it to the end of the line, change its size */
-                if (this.body.x < -10) {
-                    this.body.x = obstacles.length * DISTANCE_BETWEEN_OBSTACLES;
-                }
-            }
+        for(var i = 0; i < 10; i++) {
+            this.createObstacle(obstacles, i, false);   //top obstacleTypes
+            this.createObstacle(obstacles, i, true);    // bottom obstacles            
         }
 
     },
